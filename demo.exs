@@ -15,6 +15,7 @@ defmodule Demo do
     ]
 
     Cowboy.start_http Demo.HttpListener, 100, [port: 8080], [dispatch: dispatch]
+    IO.puts "http://localhost:8080"  
   end
 
   def init({:tcp, :http}, req, opts), do: {:ok, req, opts}
