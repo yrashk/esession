@@ -1,3 +1,10 @@
+##
+## Based on work by Alex X. Liu and others: http://www.cse.msu.edu/~alexliu/publications/Cookie/cookie.pdf
+##
+##
+## WARNING: Please understand that there is no guarantee made about how secure this thing really is
+##          This code's author is clueless about cryptography and security
+##
 defrecord Http.Session.Storage.Secure, key: nil, ivec: nil,
                                        id: Http.Session.Name.UUID,
                                        serialization: Http.Session.Serialization.Term do
