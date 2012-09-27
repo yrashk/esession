@@ -12,6 +12,13 @@ end
 
 defimpl Http.Session.Storage, for: Http.Session.Storage.Secure do
   import Bitwise
+
+  defmacrop binint do
+    quote do
+      [size(1), big, unsigned, integer, unit(16)]
+    end
+  end
+
   def update(storage, _id, _dict), do: storage
 
   def get(storage, binary) do
@@ -21,7 +28,7 @@ defimpl Http.Session.Storage, for: Http.Session.Storage.Secure do
            case validate(:base64.decode(hunk), session_key, storage.key, ivec) do
                false -> 
                   new(storage)
-               {_, << sec_data_len :: [size(1), big, unsigned, integer, unit(16)],
+               {_, << sec_data_len :: binint,
                       sec_data :: [size(sec_data_len), binary] >>} -> new(storage).dict(storage.serialization.decode(sec_data))
            end
        _ -> 
@@ -39,7 +46,7 @@ defimpl Http.Session.Storage, for: Http.Session.Storage.Secure do
   end
 
   defp make(storage, session_key, data, sec_data) do
-    sec_data = << size(sec_data) :: [size(1), big, unsigned, integer, unit(16)],
+    sec_data = << size(sec_data) :: binint,
                   sec_data :: binary >>
     :cowboy_http.urlencode(iolist_to_binary([session_key, ";", :base64.encode(storage.ivec), ";",
                                              :base64.encode(generate(data, sec_data, session_key, storage.key, storage.ivec))]))
@@ -48,36 +55,36 @@ defimpl Http.Session.Storage, for: Http.Session.Storage.Secure do
   ###
 
   defp generate(data, sec_data, session_key, key, ivec) do
-    enc = <<size(data) :: [size(1), big, unsigned, integer, unit(16)],
+    enc = <<size(data) :: binint,
             data :: binary,
-            size(sec_data) :: [size(1), big, unsigned, integer, unit(16)],
+            size(sec_data) :: binint,
             sec_data :: binary>>
     enc_data = :crypto.aes_cbc_128_encrypt(key, ivec, pad(16, enc))
     hmac = :crypto.sha_mac([data, enc_data, session_key], key)
-    <<size(data) :: [size(1), big, unsigned, integer, unit(16)],
+    <<size(data) :: binint,
      data :: binary,
-     size(enc_data) :: [size(1), big, unsigned, integer, unit(16)],
+     size(enc_data) :: binint,
      enc_data :: binary,
-     size(hmac) :: [size(1), big, unsigned, integer, unit(16)],
+     size(hmac) :: binint,
      hmac :: binary>>
   end
 
 
 
   defp validate(hunk, session_key, key, ivec) do
-    <<data_len :: [size(1), unit(16), big, unsigned, integer],
+    <<data_len :: binint,
       data :: [size(data_len), binary],
-      enc_data_len :: [size(1), unit(16), big, unsigned, integer],
+      enc_data_len :: binint,
       enc_data :: [size(enc_data_len), binary],
-      hmac_len :: [size(1), unit(16), big, unsigned, integer],
+      hmac_len :: binint,
       hmac :: [size(hmac_len), binary] >> = hunk
      dec_data = :crypto.aes_cbc_128_decrypt(key, ivec, enc_data) 
      mac = :crypto.sha_mac([data, enc_data, session_key], key)
      if secure_compare(mac, hmac) do
        case dec_data do
-         <<res_data_len :: [size(1), unit(16), big, unsigned, integer],
+         <<res_data_len :: binint,
            res_data :: [size(res_data_len), binary],
-           res_sec_data_len :: [size(1), unit(16), big, unsigned, integer],
+           res_sec_data_len :: binint,
            res_sec_data :: [size(res_sec_data_len), binary],
            _ :: binary>> -> {res_data, res_sec_data}
          _ -> false
