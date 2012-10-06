@@ -41,7 +41,7 @@ defimpl Http.Session.Storage, for: Http.Session.Storage.Secure do
   end
 
   defp new(storage) do
-    ivec = storage.id.generate_raw  
+    ivec = :crypto.strong_rand_bytes(16)
     Http.Session.new id: storage.id.generate, storage: storage.ivec(ivec)
   end
 
