@@ -29,7 +29,8 @@ defimpl Http.Session.Storage, for: Http.Session.Storage.Secure do
                false -> 
                   new(storage)
                {_, << sec_data_len :: binint,
-                      sec_data :: [size(sec_data_len), binary] >>} -> new(storage).dict(storage.serialization.decode(sec_data))
+                      sec_data :: [size(sec_data_len), binary] >>, enc_data} -> 
+                  new(storage, :crypto.aes_cbc_ivec(enc_data)).dict(storage.serialization.decode(sec_data))
            end
        _ -> 
          new(storage)
@@ -40,8 +41,8 @@ defimpl Http.Session.Storage, for: Http.Session.Storage.Secure do
     make(session.storage, session.id, "", session.storage.serialization.encode(session.dict))
   end
 
-  defp new(storage) do
-    ivec = :crypto.strong_rand_bytes(16)
+  defp new(storage, ivec // nil) do
+    ivec = ivec || :crypto.strong_rand_bytes(16)
     Http.Session.new id: storage.id.generate, storage: storage.ivec(ivec)
   end
 
@@ -86,7 +87,7 @@ defimpl Http.Session.Storage, for: Http.Session.Storage.Secure do
            res_data :: [size(res_data_len), binary],
            res_sec_data_len :: binint,
            res_sec_data :: [size(res_sec_data_len), binary],
-           _ :: binary>> -> {res_data, res_sec_data}
+           _ :: binary>> -> {res_data, res_sec_data, enc_data}
          _ -> false
        end
      else
