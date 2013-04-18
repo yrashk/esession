@@ -5,8 +5,8 @@ defimpl Http.Session.Request, for: Http.Session.Request.Cookie do
 
   def get(Http.Session.Request.Cookie[server: :cowboy, name: name, storage: storage], req) do
      case Req.cookie(name, req) do
-       {:undefined, req} -> binary = ""
-       {binary, req} when is_binary(binary) -> binary
+       {:undefined, _req} -> binary = ""
+       {binary, _req} when is_binary(binary) -> binary
      end
      Http.Session.Storage.get storage, binary
   end
