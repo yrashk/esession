@@ -1,4 +1,4 @@
-[ "cowboy": "981ea359ba23564cb9bc3056a56dfcd1a98aa362",
-  "genx": "da972d408887c137a538430f0f5b65c1ff2bbf69",
-  "ossp_uuid": "c0b566a9f0c49301791101bca240bdd6b543e0cc",
-  "ranch": "de9b6f7a707efd308a6d6535d8296c15ea277308" ]
+[ "cowboy": {:git,"https://github.com/extend/cowboy.git","8d7350fa84a466f2d0246ab534a6d6c06cea005e",[]},
+  "genx": {:git,"https://github.com/yrashk/genx.git","1a37f862edba8a8bec342ae4945fac623f2e49ab",[]},
+  "ossp_uuid": {:git,"https://github.com/yrashk/erlang-ossp-uuid.git","c0b566a9f0c49301791101bca240bdd6b543e0cc",[]},
+  "ranch": {:git,"https://github.com/extend/ranch.git","aeceeae9b2df201a20d201cc7c23341ffdc170f3",[]} ]
