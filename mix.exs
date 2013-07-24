@@ -16,10 +16,10 @@ defmodule Esession.Mixfile do
 
   defp deps(:test) do
     [
-     { :genx, %r(.*), github: "yrashk/genx"},
-     { :ossp_uuid, %r(.*), github: "yrashk/erlang-ossp-uuid"},
-     { :ranch, %r(.*), github: "extend/ranch"},
-     { :cowboy, %r(.*), github: "extend/cowboy"},
+     { :genx, github: "yrashk/genx"},
+     { :ossp_uuid, github: "yrashk/erlang-ossp-uuid"},
+     { :ranch, github: "extend/ranch"},
+     { :cowboy, github: "extend/cowboy"},
     ] ++ deps(:dev)
   end
   defp deps(_), do: []
